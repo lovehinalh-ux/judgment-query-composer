@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>車禍判例關鍵字查詢器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg">
+    <div class="bg-grid"></div>
+    <div class="bg-noise"></div>
+  </div>
+
+  <main class="page">
+    <header class="hero">
+      <div class="badge">FJUD 車禍判例關鍵字查詢器</div>
+      <h1>用標籤，快速把判例「找出來」</h1>
+      <p class="subtitle">把車禍相關詞彙組成符合 FJUD 規則的布林查詢，一鍵複製並開啟官方查詢頁。</p>
+
+      <div class="controls">
+        <div class="control">
+          <div class="control-label">模式</div>
+          <div class="segmented" id="modeToggle">
+            <button data-value="simple" class="is-active">簡易</button>
+            <button data-value="pro">專業</button>
+          </div>
+        </div>
+        <div class="control">
+          <div class="control-label">案件類別</div>
+          <div class="segmented" id="scopeToggle">
+            <button data-value="both" class="is-active">刑事＋民事</button>
+            <button data-value="criminal">刑事</button>
+            <button data-value="civil">民事</button>
+          </div>
+        </div>
+        <div class="control">
+          <div class="control-label">預設期間</div>
+          <div class="segmented" id="dateToggle">
+            <button data-value="5y" class="is-active">近 5 年</button>
+            <button data-value="10y">近 10 年</button>
+            <button data-value="all">不限定</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>1. 選擇方式</h2>
+        <p class="panel-hint">快捷直接套用情境，自選則挑選關鍵標籤。</p>
+      </div>
+      <div class="mode-select">
+        <div class="segmented" id="searchModeToggle">
+          <button data-value="quick" class="is-active">快捷</button>
+          <button data-value="custom">自選關鍵標籤</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="quickSection">
+      <div class="panel-header">
+        <h2>2. 選擇關鍵字</h2>
+        <p class="panel-hint">點選範本後立即產出推薦檢索字詞。</p>
+      </div>
+      <div class="preset-grid" id="presetGrid"></div>
+    </section>
+
+    <section class="panel" id="customSection" hidden>
+      <div class="panel-header">
+        <h2>2. 選擇關鍵字</h2>
+        <p class="panel-hint">固定核心已套用。請選擇求償主題與傷勢，系統會自動轉成法律檢索詞。</p>
+      </div>
+      <div class="locked-core">
+        <div class="locked-core-title">固定核心（自動帶入）</div>
+        <div class="tag-list" id="coreLockedTags"></div>
+      </div>
+      <div class="mapper">
+        <label for="plainTermsInput">白話關鍵字輸入（空白或逗號分隔）</label>
+        <div class="mapper-actions">
+          <input id="plainTermsInput" type="text" placeholder="例如：修復費用 精神撫慰 工作薪資">
+          <button class="ghost small" id="plainMapBtn">套用白話詞</button>
+        </div>
+        <p class="mapper-hint" id="plainMapHint">輸入白話詞後按「套用白話詞」，會自動勾選對應標籤。</p>
+      </div>
+      <div class="custom-tier">
+        <h3 class="tier-title">常見關鍵字（快捷同款）</h3>
+        <div class="tag-list" id="customCommonTags"></div>
+      </div>
+      <details class="custom-settings" id="customSettingsPanel">
+        <summary>
+          <span>設定事項（進階）</span>
+          <span class="summary-note">骨折、勞動能力減損、死亡等細項</span>
+        </summary>
+        <div class="custom-tier custom-tier-settings">
+          <div class="tag-list" id="customSettingsTags"></div>
+        </div>
+      </details>
+      <div class="selected-summary" id="selectedSummary">
+        <div class="selected-summary-head">
+          <strong id="selectedCount">已選 0 個條件</strong>
+          <span class="selected-summary-note">含固定核心：交通事故、損害賠償</span>
+        </div>
+        <div class="selected-chip-list" id="selectedChips"></div>
+      </div>
+      <div class="custom-action-bar" id="customActionBar">
+        <div class="fitness-wrap">
+          <span class="fitness-badge" id="fitnessBadge">適中</span>
+          <span class="fitness-hint" id="fitnessHint">條件適中，可直接產出。</span>
+        </div>
+        <div class="custom-action-buttons">
+          <button class="primary primary-strong" id="generateBtn" hidden>依已選標籤產出檢索字詞</button>
+          <button class="ghost" id="clearSelectedBtn">清空已選</button>
+        </div>
+        <p class="custom-action-hint" id="customActionHint"></p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <details class="advanced" id="advancedPanel">
+        <summary>
+          <span>進階條件</span>
+          <span class="summary-note">填入法院、字號、期間（可選）</span>
+        </summary>
+        <div class="advanced-grid">
+          <label class="field">
+            <span>法院</span>
+            <input type="text" id="courtInput" placeholder="例如：臺北地方法院">
+          </label>
+          <label class="field">
+            <span>裁判字號</span>
+            <input type="text" id="caseNoInput" placeholder="例如：112年度交訴字第123號">
+          </label>
+          <label class="field">
+            <span>開始日期</span>
+            <input type="date" id="startDateInput">
+          </label>
+          <label class="field">
+            <span>結束日期</span>
+            <input type="date" id="endDateInput">
+          </label>
+        </div>
+        <div class="advanced-exclude">
+          <div class="exclude-header">
+            <span>排除條件</span>
+            <button class="ghost small" id="excludePresetBtn">工安/職災排除快捷</button>
+          </div>
+          <div class="tag-list" id="excludeTags"></div>
+          <p class="mapper-hint">點選排除條件，紅色代表排除。</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel output">
+      <div class="panel-header">
+        <div>
+          <h2>3. 產出檢索字詞</h2>
+          <p class="panel-hint">輸出可直接貼到判決書系統主搜尋框的檢索字詞。</p>
+        </div>
+        <div class="output-actions">
+          <label class="narrow-toggle" id="salaryNarrowWrap">
+            <input type="checkbox" id="salaryNarrowToggle">
+            <span>窄搜：加入薪資損失（快捷）</span>
+          </label>
+          <button class="ghost" id="openFjudBtn">開啟 FJUD</button>
+          <button class="text-action" id="shareBtn">複製分享連結</button>
+        </div>
+      </div>
+
+      <div id="outputBody" hidden>
+        <div class="cards" id="outputCards"></div>
+
+        <div class="usage">
+          <div class="usage-title">貼上步驟</div>
+          <ol>
+            <li>快捷模式請直接點範本；自選模式請選關鍵字後點「產出推薦檢索字詞」。</li>
+            <li>複製「推薦檢索字詞」。</li>
+            <li>貼到 FJUD 上方主搜尋框後送出查詢。</li>
+          </ol>
+        </div>
+        <div class="warning" id="warningBox" hidden>
+          <strong>提示：</strong><span id="warningText"></span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-note">FJUD 搜尋支援 <code>+</code>、<code>&amp;</code>、<code>-</code> 與括號。請避免使用其他特殊符號。</div>
+    </footer>
+  </main>
+
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

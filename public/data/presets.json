@@ -1,0 +1,26 @@
+[
+  {
+    "id": "preset_injury_vehicle",
+    "label": "受傷＋車體損失",
+    "tags": ["injury_general", "vehicle_damage", "medical_fee"],
+    "scope": "both"
+  },
+  {
+    "id": "preset_injury_salary",
+    "label": "受傷＋薪資損失",
+    "tags": ["injury_general", "medical_fee", "salary_loss"],
+    "scope": "both"
+  },
+  {
+    "id": "preset_injury_nursing",
+    "label": "受傷＋看護",
+    "tags": ["injury_general", "medical_fee", "nursing_fee"],
+    "scope": "both"
+  },
+  {
+    "id": "preset_vehicle_only",
+    "label": "車體損失",
+    "tags": ["vehicle_damage"],
+    "scope": "both"
+  }
+]
